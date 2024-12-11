@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluctuating Images</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        img {
+            width: 50%;
+            height: auto;
+            border: 2px solid #000;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Welcome to the Fluctuating Images Page!</h1>
+    <h2>Check out the dynamic images below:</h2>
+
+    <img id="fluctuating-image" src="" alt="Fluctuating Image">
+
+    <script>
+        var images = [
+            "https://acs-project-181543232.s3.us-east-1.amazonaws.com/images/ilovecats.jpg",
+            "https://acs-project-181543232.s3.us-east-1.amazonaws.com/images/ilovedogs.jpg"
+        ];
+
+        var imageElement = document.getElementById("fluctuating-image");
+
+        // Randomly select image from the list of images
+        function randomImage() {
+            var randomIndex = Math.floor(Math.random() * images.length);
+            imageElement.src = images[randomIndex];
+        }
+
+        // Call the randomImage function to set initial image
+        randomImage();
+        
+        // Refresh image every 5 seconds
+        setInterval(randomImage, 5000);
+    </script>
+
+</body>
+</html>

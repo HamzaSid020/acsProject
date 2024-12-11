@@ -1,0 +1,10 @@
+<html>
+<body>
+    <h1>Welcome to Server: {{ ansible_hostname }}</h1>
+    <p>This request was served by: {{ ansible_hostname }}</p>
+    <h2>Here are some images from S3:</h2>
+    {% for image_url in image_urls %}
+        <img src="{{ image_url }}" alt="S3 Image" width="300">
+    {% endfor %}
+</body>
+</html>
