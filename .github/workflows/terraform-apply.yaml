@@ -53,6 +53,12 @@ jobs:
       - name: Check Network Plan for Deletions
         id: check_deletion
         run: |
+          # Ensure the tfplan file exists
+          if [ ! -f ./Network/tfplan_network ]; then
+            echo "Network plan file not found, skipping deletion check."
+            exit 1
+          fi
+
           # Check if there are destroy actions in the network plan
           terraform show -json ./Network/tfplan_network | jq '.resource_changes[] | select(.change.actions | index("destroy"))' > destroyed_network_resources.json
           if [[ -s destroyed_network_resources.json ]]; then
