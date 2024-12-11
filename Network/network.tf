@@ -1,7 +1,7 @@
 # VPC
 resource "aws_vpc" "prod_vpc" {
-  cidr_block = "10.1.0.0/16"
-  enable_dns_support = true
+  cidr_block           = "10.1.0.0/16"
+  enable_dns_support   = true
   enable_dns_hostnames = true
 
   tags = {
@@ -11,9 +11,9 @@ resource "aws_vpc" "prod_vpc" {
 
 # Public Subnets
 resource "aws_subnet" "public_subnet_1" {
-  vpc_id = aws_vpc.prod_vpc.id
-  cidr_block = "10.1.1.0/24"
-  availability_zone = "us-east-1a"
+  vpc_id                  = aws_vpc.prod_vpc.id
+  cidr_block              = "10.1.1.0/24"
+  availability_zone       = "us-east-1a"
   map_public_ip_on_launch = true
 
   tags = {
@@ -22,9 +22,9 @@ resource "aws_subnet" "public_subnet_1" {
 }
 
 resource "aws_subnet" "public_subnet_2" {
-  vpc_id = aws_vpc.prod_vpc.id
-  cidr_block = "10.1.2.0/24"
-  availability_zone = "us-east-1b"
+  vpc_id                  = aws_vpc.prod_vpc.id
+  cidr_block              = "10.1.2.0/24"
+  availability_zone       = "us-east-1b"
   map_public_ip_on_launch = true
 
   tags = {
@@ -33,9 +33,9 @@ resource "aws_subnet" "public_subnet_2" {
 }
 
 resource "aws_subnet" "public_subnet_3" {
-  vpc_id = aws_vpc.prod_vpc.id
-  cidr_block = "10.1.3.0/24"
-  availability_zone = "us-east-1c"
+  vpc_id                  = aws_vpc.prod_vpc.id
+  cidr_block              = "10.1.3.0/24"
+  availability_zone       = "us-east-1c"
   map_public_ip_on_launch = true
 
   tags = {
@@ -44,9 +44,9 @@ resource "aws_subnet" "public_subnet_3" {
 }
 
 resource "aws_subnet" "public_subnet_4" {
-  vpc_id = aws_vpc.prod_vpc.id
-  cidr_block = "10.1.4.0/24"
-  availability_zone = "us-east-1d"
+  vpc_id                  = aws_vpc.prod_vpc.id
+  cidr_block              = "10.1.4.0/24"
+  availability_zone       = "us-east-1d"
   map_public_ip_on_launch = true
 
   tags = {
@@ -56,8 +56,8 @@ resource "aws_subnet" "public_subnet_4" {
 
 # Private Subnets
 resource "aws_subnet" "private_subnet_1" {
-  vpc_id = aws_vpc.prod_vpc.id
-  cidr_block = "10.1.5.0/24"
+  vpc_id            = aws_vpc.prod_vpc.id
+  cidr_block        = "10.1.5.0/24"
   availability_zone = "us-east-1a"
 
   tags = {
@@ -66,8 +66,8 @@ resource "aws_subnet" "private_subnet_1" {
 }
 
 resource "aws_subnet" "private_subnet_2" {
-  vpc_id = aws_vpc.prod_vpc.id
-  cidr_block = "10.1.6.0/24"
+  vpc_id            = aws_vpc.prod_vpc.id
+  cidr_block        = "10.1.6.0/24"
   availability_zone = "us-east-1b"
 
   tags = {
@@ -78,14 +78,14 @@ resource "aws_subnet" "private_subnet_2" {
 # Cloud9 Environment
 resource "aws_cloud9_environment_ec2" "cloud9_env" {
 
-  name           = "Project-Cloud9-Environment"
-  instance_type  = "t3.medium" # Instance type for Cloud9
-  subnet_id      = aws_subnet.public_subnet_1.id
-  automatic_stop_time_minutes = 120 
-  image_id                  = "amazonlinux-2023-x86_64"
+  name                        = "Project-Cloud9-Environment"
+  instance_type               = "t3.medium" # Instance type for Cloud9
+  subnet_id                   = aws_subnet.public_subnet_1.id
+  automatic_stop_time_minutes = 120
+  image_id                    = "amazonlinux-2023-x86_64"
 
   tags = {
-    Project = "Cloud9-Environment"
+    Project     = "Cloud9-Environment"
     Environment = "Development"
   }
 }
@@ -101,13 +101,13 @@ resource "aws_internet_gateway" "internet_gateway" {
 
 # NAT Gateway
 resource "aws_eip" "eip" {
-  domain   = "vpc"
+  domain = "vpc"
 }
 
 resource "aws_nat_gateway" "nat_gateway" {
-  subnet_id                      = aws_subnet.public_subnet_1.id
-  connectivity_type              = "public"
-  allocation_id                  = aws_eip.eip.id
+  subnet_id         = aws_subnet.public_subnet_1.id
+  connectivity_type = "public"
+  allocation_id     = aws_eip.eip.id
 }
 
 # Public Route Table

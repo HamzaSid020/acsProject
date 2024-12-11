@@ -47,7 +47,7 @@ resource "aws_security_group" "alb_sg" {
 
 # Web Server Security Group
 resource "aws_security_group" "web_sg" {
-  vpc_id = aws_vpc.prod_vpc.id
+  vpc_id      = aws_vpc.prod_vpc.id
   description = "Allow HTTP from ALB and SSH from Bastion and Ansible Host"
 
   # Allow HTTP traffic from ALB SG
@@ -102,10 +102,10 @@ resource "aws_security_group" "private_instance_sg" {
   description = "Allow SSH only from Bastion Host"
 
   ingress {
-    description = "Allow SSH from Bastion Host"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
+    description     = "Allow SSH from Bastion Host"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
     security_groups = [aws_security_group.bastion_sg.id]
   }
 
