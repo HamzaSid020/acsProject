@@ -45,15 +45,6 @@ resource "aws_security_group" "alb_sg" {
   }
 }
 
-data "aws_caller_identity" "current" {}
-
-data "aws_security_group" "cloud9_sg" {
-  filter {
-    name   = "group-name"
-    values = ["sg-076247a61a1ffb4c4"]
-  }
-}
-
 # Web Server Security Group
 resource "aws_security_group" "web_sg" {
   vpc_id = aws_vpc.prod_vpc.id
@@ -74,14 +65,6 @@ resource "aws_security_group" "web_sg" {
     security_groups = [aws_security_group.bastion_sg.id]
   }
 
-# Allow SSH traffic from Cloud9's public IP
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    security_groups = [data.aws_security_group.cloud9_sg.id]
-    
-  }
   egress {
     from_port   = 0
     to_port     = 0
@@ -94,6 +77,24 @@ resource "aws_security_group" "web_sg" {
   }
 }
 
+
+# Retrieve the network interface for the Cloud9 instance
+data "aws_network_interface" "cloud9_eni" {
+  filter {
+    name   = "description"
+    values = ["*${aws_cloud9_environment_ec2.cloud9_env.name}*"]
+  }
+}
+
+# Use the security group of the Cloud9 environment
+resource "aws_security_group_rule" "allow_ssh_from_cloud9" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.web_sg.id # Reference your web server SG
+  source_security_group_id = [for sg in data.aws_network_interface.cloud9_eni.security_groups : sg][0]
+}
 
 # Security Group for Private Instances (Restricting access only from Bastion Host)
 resource "aws_security_group" "private_instance_sg" {

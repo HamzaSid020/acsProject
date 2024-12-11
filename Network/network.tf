@@ -75,6 +75,21 @@ resource "aws_subnet" "private_subnet_2" {
   }
 }
 
+# Cloud9 Environment
+resource "aws_cloud9_environment_ec2" "cloud9_env" {
+
+  name           = "Project-Cloud9-Environment"
+  instance_type  = "t3.medium" # Instance type for Cloud9
+  subnet_id      = aws_subnet.public_subnet_1.id
+  automatic_stop_time_minutes = 120 
+  image_id                  = "amazonlinux-2023-x86_64"
+
+  tags = {
+    Project = "Cloud9-Environment"
+    Environment = "Development"
+  }
+}
+
 # Internet Gateway
 resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.prod_vpc.id
