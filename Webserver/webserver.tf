@@ -1,9 +1,9 @@
 data "terraform_remote_state" "networks" {
   backend = "s3"
   config = {
-    bucket = var.bucket_name 
-    key    = var.state_key
-    region = var.aws_region
+    bucket = "aws-bucket-dhana1"
+    key    = "network/terraform.tfstate"
+    region = "us-east-1"
   }
 }
 
@@ -16,6 +16,7 @@ data "aws_ami" "latest_amazon_linux" {
     values = ["amzn2-ami-hvm-*-x86_64-gp2"]
   }
 }
+
 
 # EC2 Instance: Webserver 1 (Public Subnet 1)
 resource "aws_instance" "webserver_1" {
