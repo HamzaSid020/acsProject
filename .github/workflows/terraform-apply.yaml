@@ -29,15 +29,27 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
 
-      # Network Directory Terraform Execution
+      # Initialize and plan Terraform for Network Folder
       - name: Terraform Init in Network Folder
         working-directory: ./Network
         run: terraform init
 
       - name: Terraform Plan in Network Folder
+        id: network_plan
         working-directory: ./Network
         run: terraform plan -out=tfplan_network
 
+      # Initialize and plan Terraform for Webserver Folder
+      - name: Terraform Init in Webserver Folder
+        working-directory: ./Webserver
+        run: terraform init
+
+      - name: Terraform Plan in Webserver Folder
+        id: webserver_plan
+        working-directory: ./Webserver
+        run: terraform plan -out=tfplan_webserver
+
+      # Check if Network is deleting resources and apply Webserver resources first if so
       - name: Check Network Plan for Deletions
         id: check_deletion
         run: |
@@ -47,14 +59,8 @@ jobs:
             exit 1
           fi
 
-          # Output the contents of the plan file for debugging purposes
-          echo "Contents of the Network plan file:"
-          cat ./Network/tfplan_network
-
           # Check if there are destroy actions in the network plan
           terraform show -json ./Network/tfplan_network | jq '.resource_changes[] | select(.change.actions | index("destroy"))' > destroyed_network_resources.json
-
-          # Check if the destroyed resources file is empty or not
           if [[ -s destroyed_network_resources.json ]]; then
             echo "Network has resources to destroy, applying webserver resources first."
             echo "true" >> $GITHUB_ENV
@@ -62,27 +68,13 @@ jobs:
             echo "false" >> $GITHUB_ENV
           fi
 
-      # Webserver Directory Terraform Execution
-      - name: Terraform Init in Webserver Folder
+      # Conditionally apply Webserver resources first if needed
+      - name: Apply Webserver Resources (if needed)
+        if: env.check_deletion == 'true'
         working-directory: ./Webserver
-        run: terraform init
+        run: terraform apply -auto-approve tfplan_webserver
 
-      - name: Terraform Plan in Webserver Folder
-        working-directory: ./Webserver
-        run: terraform plan -out=tfplan_webserver
-
-      - name: Apply Webserver Resources First (if needed)
-        if: env.true == 'true'
-        working-directory: ./Webserver
-        run: terraform apply -auto-approve
-
-      # Network Directory Apply based on deletion check
+      # Apply Network Resources (this will happen after Webserver if needed)
       - name: Apply Network Resources
-        if: env.true == 'false'
         working-directory: ./Network
-        run: terraform apply -auto-approve
-
-      - name: Apply Network Resources (if deletion needed)
-        if: env.true == 'true'
-        working-directory: ./Network
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve tfplan_network
