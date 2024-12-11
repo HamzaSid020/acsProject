@@ -68,13 +68,20 @@ jobs:
             echo "false" >> $GITHUB_ENV
           fi
 
-      # Conditionally apply Webserver resources first if needed
+      # Conditionally apply Webserver resources first if needed (to handle dependencies)
       - name: Apply Webserver Resources (if needed)
         if: env.check_deletion == 'true'
         working-directory: ./Webserver
         run: terraform apply -auto-approve tfplan_webserver
 
+      # Re-plan the Network after applying Webserver changes (if any)
+      - name: Re-plan Network after Webserver Apply (if needed)
+        if: env.check_deletion == 'true'
+        working-directory: ./Network
+        run: terraform plan -out=tfplan_network
+
       # Apply Network Resources (this will happen after Webserver if needed)
       - name: Apply Network Resources
         working-directory: ./Network
         run: terraform apply -auto-approve tfplan_network
+      
