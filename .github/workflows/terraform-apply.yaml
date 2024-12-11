@@ -29,13 +29,21 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
 
-      # Run Terraform Plan in Network Folder
+      # Initialize and plan Terraform for Network Folder
+      - name: Terraform Init in Network Folder
+        working-directory: ./Network
+        run: terraform init
+
       - name: Terraform Plan in Network Folder
         id: network_plan
         working-directory: ./Network
         run: terraform plan -out=tfplan_network
 
-      # Run Terraform Plan in Webserver Folder
+      # Initialize and plan Terraform for Webserver Folder
+      - name: Terraform Init in Webserver Folder
+        working-directory: ./Webserver
+        run: terraform init
+
       - name: Terraform Plan in Webserver Folder
         id: webserver_plan
         working-directory: ./Webserver
