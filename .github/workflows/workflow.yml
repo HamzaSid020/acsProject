@@ -26,5 +26,6 @@ jobs:
 
       - name: Run Terraform Scripts
         run: |
+          chmod +x scripts/*.sh  # Set executable permissions
           ./scripts/terraform_network.sh
           ./scripts/terraform_webserver.sh
