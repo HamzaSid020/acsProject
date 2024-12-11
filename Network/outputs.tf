@@ -62,7 +62,7 @@ output "private_route_table_id" {
   description = "The ID of the private route table."
 }
 
-# Output for Web Server Security Group
+# Output for Web Server Security Group 
 output "web_sg" {
   value       = aws_security_group.web_sg.id
   description = "The ID of the Web Server security group."
