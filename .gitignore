@@ -1,4 +1,4 @@
-.github/ 
+github/ 
 .DS_Store
 .terraform/
 *.tfstate
